@@ -41,7 +41,6 @@ public class BoardController {
         bs.updatehits(id);
         BoardDTO boardDTO= bs.findById(id);
         model.addAttribute("board", boardDTO);
-        System.out.println(boardDTO.getBoardHits());
         return "/board/detail";
     }
 
@@ -58,5 +57,13 @@ public class BoardController {
         model.addAttribute("board", board);
 
         return "/board/detail";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Long id, Model model) {
+
+        bs.delete(id);
+
+        return "redirect:/board/list";
     }
 }
