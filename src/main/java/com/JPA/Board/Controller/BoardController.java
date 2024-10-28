@@ -44,4 +44,19 @@ public class BoardController {
         System.out.println(boardDTO.getBoardHits());
         return "/board/detail";
     }
+
+    @GetMapping("/update/{id}")
+    public String update(@PathVariable Long id, Model model) {
+        BoardDTO boardDTO = bs.findById(id);
+        model.addAttribute("boardUpdate", boardDTO);
+        return "/board/update";
+    }
+
+    @PostMapping("/update")
+    public String update(@ModelAttribute BoardDTO boardDTO, Model model) {
+        BoardDTO board=bs.update(boardDTO);
+        model.addAttribute("board", board);
+
+        return "/board/detail";
+    }
 }
