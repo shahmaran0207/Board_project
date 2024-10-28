@@ -66,4 +66,10 @@ public class BoardController {
 
         return "redirect:/board/list";
     }
+
+    @GetMapping("/paging")
+    public String paging(Model model) {
+
+        return "/board/paging";
+    }
 }
