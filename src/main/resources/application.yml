@@ -25,4 +25,4 @@ server:
       force: true
 
   application:
-    name: Board_project
+    name: location
