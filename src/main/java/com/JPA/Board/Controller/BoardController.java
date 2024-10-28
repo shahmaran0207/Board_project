@@ -23,6 +23,13 @@ public class BoardController {
 
     @PostMapping("/save")
     public String save(@ModelAttribute BoardDTO boardDTO) {
-        return "/board/save";
+
+        bs.save(boardDTO);
+        return "/home";
+    }
+
+    @GetMapping("/list")
+    public String list() {
+        return "/board/list";
     }
 }
