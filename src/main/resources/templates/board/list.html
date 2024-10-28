@@ -118,7 +118,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="board : ${boardList}">
+        <tr th:each="board : ${boardlist}">
             <td th:text="${board.id}"></td>
             <td>
                 <a th:href="@{|/board/${board.id}|}" th:text="${board.boardTitle}"></a>

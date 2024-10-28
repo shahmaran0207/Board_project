@@ -3,11 +3,13 @@ package com.JPA.Board.Service;
 import com.JPA.Board.DTO.BoardDTO;
 import com.JPA.Board.Entity.BoardEntity;
 import com.JPA.Board.Repository.BoardRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 //DTO -> Entity (EntityClass)
 //Entity -> DTO (DTOClass)
@@ -33,5 +35,23 @@ public class BoardService {
         }
 
         return boardDTOList;
+    }
+
+    @Transactional
+    public void updatehits(Long id) {
+        boardRepository.updateHits(id);
+    }
+
+    public BoardDTO findById(Long id) {
+        Optional<BoardEntity> boardEntityOptional = boardRepository.findById(id);
+
+        if(boardEntityOptional.isPresent()) {
+            BoardEntity boardEntity = boardEntityOptional.get();
+            BoardDTO bd = BoardDTO.toBoardDTO(boardEntity);
+            return bd;
+        }
+        else{
+            return null;
+        }
     }
 }

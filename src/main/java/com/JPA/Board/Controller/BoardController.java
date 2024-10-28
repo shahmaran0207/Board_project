@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @Controller
@@ -30,15 +29,19 @@ public class BoardController {
 
     @GetMapping("/list")
     public String findAll(Model model) {
-
         List<BoardDTO> boardlist=bs.findAll();
-        model.addAttribute("boardList", boardlist);
+        model.addAttribute("boardlist", boardlist);
+
         return "/board/list";
     }
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable int id, Model model) {
+    public String findById(@PathVariable Long id, Model model) {
 
-        return "/board/view";
+        bs.updatehits(id);
+        BoardDTO boardDTO= bs.findById(id);
+        model.addAttribute("board", boardDTO);
+        System.out.println(boardDTO.getBoardHits());
+        return "/board/detail";
     }
 }
