@@ -1,7 +1,7 @@
 package com.JPA.Board.Service;
 
-import com.JPA.Board.Repository.BoardFileRepository;
 import org.springframework.web.multipart.MultipartFile;
+import com.JPA.Board.Repository.BoardFileRepository;
 import org.springframework.data.domain.PageRequest;
 import com.JPA.Board.Repository.BoardRepository;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +19,8 @@ import java.util.Optional;
 import java.util.List;
 import java.io.File;
 
-//DTO -> Entity (EntityClass)
+//DTO -> Entity (Service)
 //Entity -> DTO (DTOClass)
-//Service 클래스에서 반드시 DTO를 Entity로 변환 해야함
 
 @RequiredArgsConstructor
 @Service
@@ -35,20 +34,24 @@ public class BoardService {
             boardRepository.save(boardEntity);  // 저장
         }
         else{
-            MultipartFile boardFile = boardDTO.getBoardFile();
-            String originalFilename = boardFile.getOriginalFilename();                  //원래 파일 이름
-            String storedFilename = System.currentTimeMillis()+"_"+originalFilename;    //서버 저장용 파일 이름
-            String savePath="C:/Users/wjaud/OneDrive/바탕 화면/MOST IMPORTANT/WIT_TEST/file/"+storedFilename;
-            boardFile.transferTo(new File(savePath));
             BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO);
             Long saveId = boardRepository.save(boardEntity).getId();
             BoardEntity board = boardRepository.findById(saveId).get();
 
-            BoardFileEntity boardFileEntity = BoardFileEntity.toBoardFileEntity(board, originalFilename, storedFilename);
-            boardFileRepository.save(boardFileEntity);
+            for(MultipartFile boardFile : boardDTO.getBoardFile()){
+
+                String originalFilename = boardFile.getOriginalFilename();                  //원래 파일 이름
+                String storedFilename = System.currentTimeMillis()+"_"+originalFilename;    //서버 저장용 파일 이름
+                String savePath="C:/Users/wjaud/OneDrive/바탕 화면/MOST IMPORTANT/WIT_TEST/file/"+storedFilename;
+                boardFile.transferTo(new File(savePath));
+
+                BoardFileEntity boardFileEntity = BoardFileEntity.toBoardFileEntity(board, originalFilename, storedFilename);
+                boardFileRepository.save(boardFileEntity);
+            }
         }
     }
 
+    @Transactional  //없으면 에러 뜸
     public List<BoardDTO> findAll() {
         List<BoardEntity> boardEntityList = boardRepository.findAll();
         List<BoardDTO> boardDTOList = new ArrayList<>();
@@ -64,6 +67,7 @@ public class BoardService {
         boardRepository.updateHits(id);
     }
 
+    @Transactional
     public BoardDTO findById(Long id) {
         Optional<BoardEntity> boardEntityOptional = boardRepository.findById(id);
 
