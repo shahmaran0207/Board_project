@@ -1,10 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Title</title>
-</head>
-<body>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f4;
+    }
 
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .pagination {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .pagination a {
+      padding: 8px 16px;
+      margin: 0 4px;
+      border: 1px solid #4CAF50;
+      color: #4CAF50;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .pagination a:hover {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .current-page {
+      padding: 8px 16px;
+      margin: 0 4px;
+      border: 1px solid #4CAF50;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+<h1>게시판 목록</h1>
+<button onclick="saveReq()">글작성</button>
+
+<table>
+  <tr>
+    <th>id</th>
+    <th>title</th>
+    <th>writer</th>
+    <th>date</th>
+    <th>hits</th>
+  </tr>
+  <tr th:each="board: ${boardList}">
+    <td th:text="${board.id}"></td>
+    <td><a th:href="@{|/board/${board.id}|(page=${boardList.number + 1})}" th:text="${board.boardTitle}"></a></td>
+    <td th:text="${board.boardWriter}"></td>
+    <td th:text="${#temporals.format(board.boardCreatedTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+    <td th:text="${board.boardHits}"></td>
+  </tr>
+</table>
+
+<div class="pagination">
+  <a th:href="@{/board/paging(page=1)}">First</a>
+  <a th:href="${boardList.first} ? '#' : @{/board/paging(page=${boardList.number})}">prev</a>
+
+  <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
+      <span th:if="${page == boardList.number + 1}" class="current-page" th:text="${page}"></span>
+      <span th:unless="${page == boardList.number + 1}">
+        <a th:href="@{/board/paging(page=${page})}" th:text="${page}"></a>
+      </span>
+    </span>
+
+  <a th:href="${boardList.last} ? '#' : @{/board/paging(page=${boardList.number + 2})}">next</a>
+  <a th:href="@{/board/paging(page=${boardList.totalPages})}">Last</a>
+</div>
 </body>
+
+<script>
+  const saveReq = () => {
+    location.href = "/board/save";
+  }
+</script>
 </html>

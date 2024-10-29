@@ -5,8 +5,11 @@ import com.JPA.Board.Entity.BoardEntity;
 import com.JPA.Board.Repository.BoardRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +36,6 @@ public class BoardService {
         for(BoardEntity boardEntity : boardEntityList) {
             boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
         }
-
         return boardDTOList;
     }
 
@@ -50,9 +52,7 @@ public class BoardService {
             BoardDTO bd = BoardDTO.toBoardDTO(boardEntity);
             return bd;
         }
-        else{
-            return null;
-        }
+        else return null;
     }
 
     public BoardDTO update(BoardDTO boardDTO) {
@@ -64,5 +64,16 @@ public class BoardService {
 
     public void delete(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    public Page<BoardDTO> paging(Pageable pageable) {
+        int page=pageable.getPageNumber()-1;
+        int PageLimit=10;
+        Page<BoardEntity> boardEntities=
+           boardRepository.findAll(PageRequest.of(page, PageLimit, Sort.by(Sort.Direction.DESC, "id")));
+
+        Page<BoardDTO> boarddtos=boardEntities.map(board -> new BoardDTO(board.getId(), board.getBoardWriter(), board.getBoardTitle(), board.getBoardHits(), board.getCreatedTime()));
+
+        return boarddtos;
     }
 }
