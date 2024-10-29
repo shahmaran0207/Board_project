@@ -2,6 +2,8 @@ package com.JPA.Board.Entity;
 
 import com.JPA.Board.DTO.BoardDTO;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,13 +34,20 @@ public class BoardEntity extends BaseEntity {
     @Column
     private int boardHits;
 
+    @Column
+    private int fileAttached;
+
+    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<BoardFileEntity> boardFileEntityList = new ArrayList<>();
+
     public static BoardEntity toSaveEntity(BoardDTO boardDTo){
         BoardEntity boardEntity=new BoardEntity();
 
+        boardEntity.setBoardContents(boardDTo.getBoardContents());
         boardEntity.setBoardWriter(boardDTo.getBoardWriter());
         boardEntity.setBoardTitle(boardDTo.getBoardTitle());
         boardEntity.setBoardPass(boardDTo.getBoardPass());
-        boardEntity.setBoardContents(boardDTo.getBoardContents());
+        boardEntity.setFileAttached(0);
         boardEntity.setBoardHits(0);
 
         return boardEntity;
@@ -47,12 +56,25 @@ public class BoardEntity extends BaseEntity {
     public static BoardEntity toUpdateEntity(BoardDTO boardDTO) {
         BoardEntity boardEntity=new BoardEntity();
 
-        boardEntity.setId(boardDTO.getId());
+        boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setBoardWriter(boardDTO.getBoardWriter());
         boardEntity.setBoardTitle(boardDTO.getBoardTitle());
         boardEntity.setBoardPass(boardDTO.getBoardPass());
-        boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setBoardHits(boardDTO.getBoardHits());
+        boardEntity.setId(boardDTO.getId());
+
+        return boardEntity;
+    }
+
+    public static BoardEntity toSaveFileEntity(BoardDTO boardDTO) {
+        BoardEntity boardEntity=new BoardEntity();
+
+        boardEntity.setBoardContents(boardDTO.getBoardContents());
+        boardEntity.setBoardWriter(boardDTO.getBoardWriter());
+        boardEntity.setBoardTitle(boardDTO.getBoardTitle());
+        boardEntity.setBoardPass(boardDTO.getBoardPass());
+        boardEntity.setFileAttached(0);
+        boardEntity.setBoardHits(1);
 
         return boardEntity;
     }

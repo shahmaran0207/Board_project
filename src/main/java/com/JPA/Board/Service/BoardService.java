@@ -1,32 +1,52 @@
 package com.JPA.Board.Service;
 
-import com.JPA.Board.DTO.BoardDTO;
-import com.JPA.Board.Entity.BoardEntity;
-import com.JPA.Board.Repository.BoardRepository;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import com.JPA.Board.Repository.BoardFileRepository;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.PageRequest;
+import com.JPA.Board.Repository.BoardRepository;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import com.JPA.Board.Entity.BoardFileEntity;
+import jakarta.transaction.Transactional;
+import com.JPA.Board.Entity.BoardEntity;
+import lombok.RequiredArgsConstructor;
+import com.JPA.Board.DTO.BoardDTO;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
+import java.util.List;
+import java.io.File;
 
 //DTO -> Entity (EntityClass)
 //Entity -> DTO (DTOClass)
-
 //Service 클래스에서 반드시 DTO를 Entity로 변환 해야함
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final BoardFileRepository boardFileRepository;
 
-    public void save(BoardDTO boardDTO) {
-        BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
-        boardRepository.save(boardEntity);  // 저장
+    public void save(BoardDTO boardDTO) throws IOException {
+        if(boardDTO.getBoardFile().isEmpty()){
+            BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
+            boardRepository.save(boardEntity);  // 저장
+        }
+        else{
+            MultipartFile boardFile = boardDTO.getBoardFile();
+            String originalFilename = boardFile.getOriginalFilename();                  //원래 파일 이름
+            String storedFilename = System.currentTimeMillis()+"_"+originalFilename;    //서버 저장용 파일 이름
+            String savePath="C:/Users/wjaud/OneDrive/바탕 화면/MOST IMPORTANT/WIT_TEST/file/"+storedFilename;
+            boardFile.transferTo(new File(savePath));
+            BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO);
+            Long saveId = boardRepository.save(boardEntity).getId();
+            BoardEntity board = boardRepository.findById(saveId).get();
+
+            BoardFileEntity boardFileEntity = BoardFileEntity.toBoardFileEntity(board, originalFilename, storedFilename);
+            boardFileRepository.save(boardFileEntity);
+        }
     }
 
     public List<BoardDTO> findAll() {

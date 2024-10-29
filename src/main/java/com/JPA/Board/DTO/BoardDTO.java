@@ -1,25 +1,33 @@
 package com.JPA.Board.DTO;
 
+import org.springframework.web.multipart.MultipartFile;
 import com.JPA.Board.Entity.BoardEntity;
-import lombok.*;
 import java.time.LocalDateTime;
+import lombok.*;
 
+@NoArgsConstructor //기본 생성자
+@AllArgsConstructor //모든 필드를 매개변수로 하는 생성자
 @ToString
 @Getter
 @Setter
-@NoArgsConstructor //기본 생성자
-@AllArgsConstructor //모든 필드를 매개변수로 하는 생성자
 public class BoardDTO {
 
     private Long id;
+
     private String boardWriter;
     private String boardPass;
     private String boardTitle;
     private String boardContents;
+    private String originalFileName;
+    private String storedFileName;
+
     private LocalDateTime boardCreatedTime;
     private LocalDateTime boardUpdatedTime;
 
+    private int fileAttached;
     private int boardHits;
+
+    private MultipartFile boardFile;
 
     public BoardDTO(Long id, String boardWriter, String boardTitle, int boardHits, LocalDateTime boardCreatedTime) {
         this.id = id;
