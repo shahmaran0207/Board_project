@@ -1,11 +1,10 @@
 package com.JPA.Board.DTO;
 
 import com.JPA.Board.Entity.CommentEntity;
+import java.time.LocalDateTime;
+import lombok.ToString;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

@@ -1,11 +1,8 @@
 package com.JPA.Board.DTO;
 
 import org.springframework.web.multipart.MultipartFile;
-import com.JPA.Board.Entity.BoardFileEntity;
 import com.JPA.Board.Entity.BoardEntity;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.*;
 
 @AllArgsConstructor //모든 필드를 매개변수로 하는 생성자

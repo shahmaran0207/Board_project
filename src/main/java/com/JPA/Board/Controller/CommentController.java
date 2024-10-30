@@ -16,7 +16,6 @@ import java.util.List;
 //생성 순서: Controller-> Entity(테이블 생성) -> DTO(테이블을 서버에 전달) -> Repository(extends JPA)-> Service(Repository)
 //호출 순서: Controller -> Service-> Repository -> Entity
 
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/comment")

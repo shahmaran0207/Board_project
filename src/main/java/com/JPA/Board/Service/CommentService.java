@@ -1,16 +1,15 @@
 package com.JPA.Board.Service;
 
-import com.JPA.Board.DTO.CommentDTO;
-import com.JPA.Board.Entity.BoardEntity;
-import com.JPA.Board.Entity.CommentEntity;
-import com.JPA.Board.Repository.BoardRepository;
 import com.JPA.Board.Repository.CommentRepository;
-import lombok.RequiredArgsConstructor;
+import com.JPA.Board.Repository.BoardRepository;
 import org.springframework.stereotype.Service;
-
+import com.JPA.Board.Entity.CommentEntity;
+import com.JPA.Board.Entity.BoardEntity;
+import lombok.RequiredArgsConstructor;
+import com.JPA.Board.DTO.CommentDTO;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

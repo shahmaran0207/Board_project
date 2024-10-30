@@ -1,15 +1,15 @@
 package com.JPA.Board.Controller;
 
-import com.JPA.Board.DTO.CommentDTO;
-import com.JPA.Board.Service.CommentService;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import com.JPA.Board.Service.CommentService;
 import com.JPA.Board.Service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ui.Model;
+import com.JPA.Board.DTO.CommentDTO;
 import com.JPA.Board.DTO.BoardDTO;
 import java.io.IOException;
 import java.util.List;
