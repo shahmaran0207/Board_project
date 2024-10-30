@@ -15,27 +15,27 @@ import lombok.Setter;
 @Table(name="board_table")
 public class BoardEntity extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id // pk 컬럼 지정. 필수
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // auto_increment
     private Long id;
 
-    @Column(length = 20, nullable = false)  //크기 20, not null 지정
+    @Column(length = 20, nullable = false) // 크기 20, not null
     private String boardWriter;
 
-    @Column
+    @Column // 크기 255, null 가능
     private String boardPass;
 
     @Column
     private String boardTitle;
 
-    @Column
+    @Column(length = 500)
     private String boardContents;
 
     @Column
     private int boardHits;
 
     @Column
-    private int fileAttached;
+    private int fileAttached; // 1 or 0
 
     @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BoardFileEntity> boardFileEntityList = new ArrayList<>();
@@ -43,42 +43,36 @@ public class BoardEntity extends BaseEntity {
     @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CommentEntity> commentEntityList = new ArrayList<>();
 
-    public static BoardEntity toSaveEntity(BoardDTO boardDTo){
-        BoardEntity boardEntity=new BoardEntity();
-
-        boardEntity.setBoardContents(boardDTo.getBoardContents());
-        boardEntity.setBoardWriter(boardDTo.getBoardWriter());
-        boardEntity.setBoardTitle(boardDTo.getBoardTitle());
-        boardEntity.setBoardPass(boardDTo.getBoardPass());
-        boardEntity.setFileAttached(0);
+    public static BoardEntity toSaveEntity(BoardDTO boardDTO) {
+        BoardEntity boardEntity = new BoardEntity();
+        boardEntity.setBoardWriter(boardDTO.getBoardWriter());
+        boardEntity.setBoardPass(boardDTO.getBoardPass());
+        boardEntity.setBoardTitle(boardDTO.getBoardTitle());
+        boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setBoardHits(0);
-
+        boardEntity.setFileAttached(0); // 파일 없음.
         return boardEntity;
     }
 
     public static BoardEntity toUpdateEntity(BoardDTO boardDTO) {
-        BoardEntity boardEntity=new BoardEntity();
-
-        boardEntity.setBoardContents(boardDTO.getBoardContents());
-        boardEntity.setBoardWriter(boardDTO.getBoardWriter());
-        boardEntity.setBoardTitle(boardDTO.getBoardTitle());
-        boardEntity.setBoardPass(boardDTO.getBoardPass());
-        boardEntity.setBoardHits(boardDTO.getBoardHits());
+        BoardEntity boardEntity = new BoardEntity();
         boardEntity.setId(boardDTO.getId());
-
+        boardEntity.setBoardWriter(boardDTO.getBoardWriter());
+        boardEntity.setBoardPass(boardDTO.getBoardPass());
+        boardEntity.setBoardTitle(boardDTO.getBoardTitle());
+        boardEntity.setBoardContents(boardDTO.getBoardContents());
+        boardEntity.setBoardHits(boardDTO.getBoardHits());
         return boardEntity;
     }
 
     public static BoardEntity toSaveFileEntity(BoardDTO boardDTO) {
-        BoardEntity boardEntity=new BoardEntity();
-
-        boardEntity.setBoardContents(boardDTO.getBoardContents());
+        BoardEntity boardEntity = new BoardEntity();
         boardEntity.setBoardWriter(boardDTO.getBoardWriter());
-        boardEntity.setBoardTitle(boardDTO.getBoardTitle());
         boardEntity.setBoardPass(boardDTO.getBoardPass());
-        boardEntity.setFileAttached(0);
-        boardEntity.setBoardHits(1);
-
+        boardEntity.setBoardTitle(boardDTO.getBoardTitle());
+        boardEntity.setBoardContents(boardDTO.getBoardContents());
+        boardEntity.setBoardHits(0);
+        boardEntity.setFileAttached(1); // 파일 있음.
         return boardEntity;
     }
 }

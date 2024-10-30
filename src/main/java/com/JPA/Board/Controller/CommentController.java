@@ -2,7 +2,9 @@ package com.JPA.Board.Controller;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.http.ResponseEntity;
 import com.JPA.Board.Service.CommentService;
@@ -14,11 +16,13 @@ import java.util.List;
 //생성 순서: Controller-> Entity(테이블 생성) -> DTO(테이블을 서버에 전달) -> Repository(extends JPA)-> Service(Repository)
 //호출 순서: Controller -> Service-> Repository -> Entity
 
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/comment")
 public class CommentController {
     private final CommentService commentService;
+
     @PostMapping("/save")
     public ResponseEntity save(@ModelAttribute CommentDTO commentDTO) {
         System.out.println("commentDTO = " + commentDTO);
@@ -31,4 +35,14 @@ public class CommentController {
         }
     }
 
+    // 댓글 목록을 반환하는 GET 메서드 추가
+    @GetMapping("/list/{id}")
+    public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long id) {
+        List<CommentDTO> commentDTOList = commentService.findAll(id);
+        if (commentDTOList != null && !commentDTOList.isEmpty()) {
+            return new ResponseEntity<>(commentDTOList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }

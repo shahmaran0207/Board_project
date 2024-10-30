@@ -61,8 +61,11 @@
   </tr>
   <tr th:if="${board.fileAttached == 1}">
     <th>Image</th>
-    <td th:each="fileName: ${board.storedFileName}"><img th:src="@{|/upload/${fileName}|}" alt="Uploaded Image"></td>
+    <td th:each="fileName: ${board.storedFileName}">
+      <img th:src="@{|/upload/${fileName}|}" alt="Uploaded Image">
+    </td>
   </tr>
+
 </table>
 
 <div class="button-container">

@@ -27,62 +27,59 @@ import java.io.File;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
-
     public void save(BoardDTO boardDTO) throws IOException {
-        if(boardDTO.getBoardFile().isEmpty()){
+        // 파일 첨부 여부에 따라 로직 분리
+        if (boardDTO.getBoardFile().isEmpty()) {
+            // 첨부 파일 없음.
             BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
-            boardRepository.save(boardEntity);  // 저장
-        }
-        else{
+            boardRepository.save(boardEntity);
+        } else {
+
+            MultipartFile boardFile = boardDTO.getBoardFile(); // 1.
+            String originalFilename = boardFile.getOriginalFilename(); // 2.
+            String storedFileName = System.currentTimeMillis() + "_" + originalFilename; // 3.
+            String savePath = "C:/Users/wjaud/OneDrive/바탕 화면/MOST IMPORTANT/Board_project/file/" + storedFileName; // 4. C:/springboot_img/9802398403948_내사진.jpg
+            boardFile.transferTo(new File(savePath)); // 5.
             BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO);
-            Long saveId = boardRepository.save(boardEntity).getId();
-            BoardEntity board = boardRepository.findById(saveId).get();
+            Long savedId = boardRepository.save(boardEntity).getId();
+            BoardEntity board = boardRepository.findById(savedId).get();
 
-            for(MultipartFile boardFile : boardDTO.getBoardFile()){
-
-                String originalFilename = boardFile.getOriginalFilename();                  //원래 파일 이름
-                String storedFilename = System.currentTimeMillis()+"_"+originalFilename;    //서버 저장용 파일 이름
-                String savePath="C:/Users/wjaud/OneDrive/바탕 화면/MOST IMPORTANT/WIT_TEST/file/"+storedFilename;
-                boardFile.transferTo(new File(savePath));
-
-                BoardFileEntity boardFileEntity = BoardFileEntity.toBoardFileEntity(board, originalFilename, storedFilename);
-                boardFileRepository.save(boardFileEntity);
-            }
+            BoardFileEntity boardFileEntity = BoardFileEntity.toBoardFileEntity(board, originalFilename, storedFileName);
+            boardFileRepository.save(boardFileEntity);
         }
+
     }
 
-    @Transactional  //없으면 에러 뜸
+    @Transactional
     public List<BoardDTO> findAll() {
         List<BoardEntity> boardEntityList = boardRepository.findAll();
         List<BoardDTO> boardDTOList = new ArrayList<>();
-
-        for(BoardEntity boardEntity : boardEntityList) {
+        for (BoardEntity boardEntity: boardEntityList) {
             boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
         }
         return boardDTOList;
     }
 
     @Transactional
-    public void updatehits(Long id) {
+    public void updateHits(Long id) {
         boardRepository.updateHits(id);
     }
 
     @Transactional
     public BoardDTO findById(Long id) {
-        Optional<BoardEntity> boardEntityOptional = boardRepository.findById(id);
-
-        if(boardEntityOptional.isPresent()) {
-            BoardEntity boardEntity = boardEntityOptional.get();
-            BoardDTO bd = BoardDTO.toBoardDTO(boardEntity);
-            return bd;
+        Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(id);
+        if (optionalBoardEntity.isPresent()) {
+            BoardEntity boardEntity = optionalBoardEntity.get();
+            BoardDTO boardDTO = BoardDTO.toBoardDTO(boardEntity);
+            return boardDTO;
+        } else {
+            return null;
         }
-        else return null;
     }
 
     public BoardDTO update(BoardDTO boardDTO) {
         BoardEntity boardEntity = BoardEntity.toUpdateEntity(boardDTO);
         boardRepository.save(boardEntity);
-
         return findById(boardDTO.getId());
     }
 
@@ -91,13 +88,15 @@ public class BoardService {
     }
 
     public Page<BoardDTO> paging(Pageable pageable) {
-        int page=pageable.getPageNumber()-1;
-        int PageLimit=10;
-        Page<BoardEntity> boardEntities=
-           boardRepository.findAll(PageRequest.of(page, PageLimit, Sort.by(Sort.Direction.DESC, "id")));
+        int page = pageable.getPageNumber() - 1;
+        int pageLimit = 3; // 한 페이지에 보여줄 글 갯수
+        // 한페이지당 3개씩 글을 보여주고 정렬 기준은 id 기준으로 내림차순 정렬
+        // page 위치에 있는 값은 0부터 시작
+        Page<BoardEntity> boardEntities =
+                boardRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
-        Page<BoardDTO> boarddtos=boardEntities.map(board -> new BoardDTO(board.getId(), board.getBoardWriter(), board.getBoardTitle(), board.getBoardHits(), board.getCreatedTime()));
-
-        return boarddtos;
+        // 목록: id, writer, title, hits, createdTime
+        Page<BoardDTO> boardDTOS = boardEntities.map(board -> new BoardDTO(board.getId(), board.getBoardWriter(), board.getBoardTitle(), board.getBoardHits(), board.getCreatedTime()));
+        return boardDTOS;
     }
 }
