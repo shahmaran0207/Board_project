@@ -4,7 +4,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import com.JPA.Board.Service.CommentService;
+import org.springframework.http.HttpStatus;
 import lombok.RequiredArgsConstructor;
 import com.JPA.Board.DTO.CommentDTO;
 import java.util.List;
@@ -12,20 +14,21 @@ import java.util.List;
 //생성 순서: Controller-> Entity(테이블 생성) -> DTO(테이블을 서버에 전달) -> Repository(extends JPA)-> Service(Repository)
 //호출 순서: Controller -> Service-> Repository -> Entity
 
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/comment")
-@Controller
 public class CommentController {
     private final CommentService commentService;
-
     @PostMapping("/save")
-    public String save(@ModelAttribute CommentDTO comment) {
-        Long saveResult = commentService.save(comment);
-
-        if(saveResult != null){
-            List<CommentDTO> commentDTOList = commentService.findAll(comment.getBoardId());
-        } else return "작성 실패";
-
-        return "redirect:/board/comment";
+    public ResponseEntity save(@ModelAttribute CommentDTO commentDTO) {
+        System.out.println("commentDTO = " + commentDTO);
+        Long saveResult = commentService.save(commentDTO);
+        if (saveResult != null) {
+            List<CommentDTO> commentDTOList = commentService.findAll(commentDTO.getBoardId());
+            return new ResponseEntity<>(commentDTOList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("해당 게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+        }
     }
+
 }

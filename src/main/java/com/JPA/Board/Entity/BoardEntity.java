@@ -12,7 +12,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name="boarad_table")
+@Table(name="board_table")
 public class BoardEntity extends BaseEntity {
 
     @Id
